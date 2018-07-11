@@ -41,10 +41,8 @@ function draw() {
     population.selection(n);
     completed = false;
   }
-  if (completed)
-    stroke(255, 0, 0);
-  else
-    stroke(0);
+  if (completed) stroke(255, 0, 0);
+  else stroke(0);
   ellipse(target.x, target.y, 16, 16);
 }
 
@@ -58,9 +56,7 @@ class Population {
     }
   }
 
-
   evaluate() {
-
     var maxfit = 0;
     for (var i = 0; i < this.popsize; i++) {
       this.rockets[i].calcFitness();
@@ -81,7 +77,7 @@ class Population {
         this.matingpool.push(this.rockets[i]);
       }
     }
-  };
+  }
 
   selection(n) {
     var newrockets = [];
@@ -90,19 +86,18 @@ class Population {
       var parentB = random(this.matingpool).dna;
 
       var child = parentA.crossover(parentB);
-      if (!parentA.completed)
-        child.mutation(n);
+      if (!parentA.completed) child.mutation(n);
       newrockets[i] = new Rocket(child);
     }
     this.rockets = newrockets;
-  };
+  }
 
   run() {
     for (var i = 0; i < this.popsize; i++) {
       this.rockets[i].update();
       this.rockets[i].show();
     }
-  };
+  }
 }
 
 class DNA {
@@ -119,7 +114,6 @@ class DNA {
     }
   }
 
-
   crossover(partner) {
     var newgenes = [];
     var mid = floor(random(this.genes.length));
@@ -132,7 +126,7 @@ class DNA {
     }
 
     return new DNA(newgenes);
-  };
+  }
 
   mutation(n) {
     for (var i = 0; i < this.genes.length; i++) {
@@ -141,7 +135,7 @@ class DNA {
         this.genes[i].setMag(0.1);
       }
     }
-  };
+  }
 }
 
 class Rocket {
@@ -154,15 +148,13 @@ class Rocket {
     this.time = 1000;
     this.fitness = 0;
 
-    if (dna)
-      this.dna = dna;
-    else
-      this.dna = new DNA();
+    if (dna) this.dna = dna;
+    else this.dna = new DNA();
   }
 
   applyForce(force) {
     this.acc.add(force);
-  };
+  }
 
   update() {
     this.applyForce(this.dna.genes[count]);
@@ -171,7 +163,7 @@ class Rocket {
       this.updatePosition();
     }
     this.checkCrashed();
-  };
+  }
 
   updatePosition() {
     this.vel.add(this.acc);
@@ -191,27 +183,40 @@ class Rocket {
 
   checkCrashed() {
     //middle rectangle
-    if ((this.pos.y < (height / 2) + 3) && (this.pos.y > (height / 2)) && (this.pos.x > 100) && (this.pos.x < 300))
+    if (
+      this.pos.y < height / 2 + 3 &&
+      this.pos.y > height / 2 &&
+      this.pos.x > 100 &&
+      this.pos.x < 300
+    )
       this.crashed = true;
     //borders
-    if (this.pos.y < 1 || this.pos.y > height || this.pos.x < 0 || this.pos.x > width)
+    if (
+      this.pos.y < 1 ||
+      this.pos.y > height ||
+      this.pos.x < 0 ||
+      this.pos.x > width
+    )
       this.crashed = true;
   }
 
   show() {
-    stroke(255);
+    if (this.crashed) stroke(255, 0, 0);
+    else stroke(255);
     strokeWeight(2);
     point(this.pos.x, this.pos.y);
-  };
+  }
 
   calcFitness() {
     var d = dist(this.pos.x, this.pos.y, target.x, target.y);
 
     if (!this.completed) {
       this.fitness = (1 / Math.pow(d, 2)) * 100;
-    } else this.fitness = (1 / d) * (1 / Math.pow(this.time, 3)) * 8000000;
+    } else {
+      this.fitness = (1 / d) * (1 / Math.pow(this.time, 3)) * 10000000000;
+    }
     if (this.crashed) {
       this.fitness = 0;
     }
-  };
+  }
 }
